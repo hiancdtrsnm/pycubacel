@@ -1,6 +1,9 @@
 {
-    "language": "en_US",
-    "username": "",
-    "password": "",
-    "uword": ""
+    "login": {
+        "language": "en_US",
+        "username": "51111111",
+        "password": "",
+        "uword": ""
+    },
+    "data_path": "~/.internethistory.json"
 }

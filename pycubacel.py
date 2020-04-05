@@ -11,6 +11,7 @@ import typer
 from pathlib import Path
 import datetime
 import pgrep
+import os
 
 LOGIN_URL = 'https://mi.cubacel.net:8443/login/Login'
 BASE_HOST = 'https://mi.cubacel.net'
@@ -100,7 +101,7 @@ def main(config_path: Path):
     ans['openvpn'] = pgrep.pgrep('openvpn')
     ans['user'] = FORM_DATA['login']['username']
     try:
-        open(FORM_DATA['data_path'], 'a').write(json.dumps(ans, default=str, ensure_ascii=False) + '\n')
+        open(os.path.expanduser(FORM_DATA['data_path']), 'a').write(json.dumps(ans, default=str, ensure_ascii=False) + '\n')
 
     except Exception as e:
         print(e)
