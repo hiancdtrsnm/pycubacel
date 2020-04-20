@@ -3,8 +3,6 @@
 import json
 import requests
 from parsel import Selector
-import gi
-from gi.repository import Gio
 import maya
 from datetime import date, timedelta
 import typer
@@ -65,17 +63,7 @@ def get_quota(login_data):
 
     maya_time = maya.parse(str(date.today() + timedelta(days=int(days))))
 
-    gi.require_version('Gio', '2.0')
-    Application = Gio.Application.new(
-        "hello.world", Gio.ApplicationFlags.FLAGS_NONE)
-    Application.register()
-    Notification = Gio.Notification.new(
-        f"Pycubacel (finish {maya_time.slang_time()})")
-    Notification.set_body(
-        f"La cuenta vence en: {days} días\n\nQuedan: {cant_lte}{unidad_lte} de bono LTE\nQuedan: {cant}{unidad} de Internet")
-    Icon = Gio.ThemedIcon.new("dialog-information")
-    Notification.set_icon(Icon)
-    Application.send_notification(None, Notification)
+
 
     print(
         f"La cuenta vence en: {days} días\n\nQuedan: {cant_lte}{unidad_lte} de bono LTE\nQuedan: {cant}{unidad} de Internet")
@@ -90,7 +78,7 @@ def get_quota(login_data):
     }
 
 
-def main(config_path: Path):
+def consult(config_path: Path):
     FORM_DATA = json.load(config_path.open())
     ans = {}
     start = datetime.datetime.now()
@@ -109,4 +97,4 @@ def main(config_path: Path):
 
 
 if __name__ == "__main__":
-    typer.run(main)
+    typer.run(consult)
