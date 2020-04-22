@@ -11,6 +11,9 @@ import datetime
 import pgrep
 import os
 import urllib3
+import psutil
+
+OPENVPN_PROCCESS_NAME = "openvpn"
 
 LOGIN_URL = 'https://mi.cubacel.net:8443/login/Login'
 BASE_HOST = 'https://mi.cubacel.net'
@@ -87,11 +90,11 @@ def consult(config_path: Path):
     ans['internet'] = internet
     ans['duration'] = datetime.datetime.now() - start
     ans['timestamp'] = datetime.datetime.now()
-    ans['openvpn'] = pgrep.pgrep('openvpn')
+    ans['openvpn'] = [proc.pid for proc in psutil.process_iter() if OPENVPN_PROCCESS_NAME in proc.name()]
     ans['user'] = FORM_DATA['login']['username']
+    
     try:
         open(os.path.expanduser(FORM_DATA['data_path']), 'a').write(json.dumps(ans, default=str, ensure_ascii=False) + '\n')
-
     except Exception as e:
         print(e)
     return ans
