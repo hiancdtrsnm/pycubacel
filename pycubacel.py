@@ -10,6 +10,7 @@ from pathlib import Path
 import datetime
 import pgrep
 import os
+import urllib3
 
 LOGIN_URL = 'https://mi.cubacel.net:8443/login/Login'
 BASE_HOST = 'https://mi.cubacel.net'
@@ -26,6 +27,8 @@ def to_MB(cant, unit):
 
 
 def get_quota(login_data):
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
     session = requests.Session()
 
     resp = session.post(LOGIN_URL, data=login_data, verify=False)
@@ -44,8 +47,6 @@ def get_quota(login_data):
         '//*[@class="module_"]/div/div/div/div/div[2]/nav/div/div/ul/li/a/text()').getall()[:-1]
 
     links = {name.strip(): link for name, link in zip(names, links)}
-
-    print(links)
 
     resp = session.get(f'{BASE_HOST}{links["My Account"]}')
 
