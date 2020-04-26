@@ -3,7 +3,6 @@
 import json
 import requests
 from parsel import Selector
-import maya
 from datetime import date, timedelta
 import typer
 from pathlib import Path
@@ -63,11 +62,6 @@ def get_quota(login_data):
 
     days = sel.xpath(
         '//*[@id="multiAccordion"]/div/div[2]/div[1]/div[1]/text()').get()
-
-
-    maya_time = maya.parse(str(date.today() + timedelta(days=int(days))))
-
-
 
     print(
         f"La cuenta vence en: {days} días\n\nQuedan: {cant_lte}{unidad_lte} de bono LTE\nQuedan: {cant}{unidad} de Internet")
