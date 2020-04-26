@@ -63,15 +63,62 @@ def get_quota(login_data):
     days = sel.xpath(
         '//*[@id="multiAccordion"]/div/div[2]/div[1]/div[1]/text()').get()
 
-    print(
-        f"La cuenta vence en: {days} días\n\nQuedan: {cant_lte}{unidad_lte} de bono LTE\nQuedan: {cant}{unidad} de Internet")
+    only_lte = sel.xpath('//*[@id="multiAccordion"]/div/div[1]/div[1]/div[2]/text()').get()
+
+    container_account_details_selector = sel.xpath('//*[@id="service_663ba72d-fe96-427f-880f-9998215775dd"]/div/div[3]/div[1]')
+
+    credit = container_account_details_selector.xpath('./div[1]/div[1]/div[2]/span[2]/span/text()').get()
+    credit_expire_date = container_account_details_selector.xpath('./div[1]/div[2]/div[2]/span[2]/text()').get()
+
+    bonus_credit = container_account_details_selector.xpath('./div[3]/div[1]/div[2]/span[2]/text()').get()
+    bonus_credit_expire_date = container_account_details_selector.xpath('./div[3]/div[2]/div[1]/span[2]/text()').get()
+
+    national_data = container_account_details_selector.xpath('./div[5]/div[1]')
+    national_data_value = sel.xpath('//*[@id="myStat_bonusDataN"]/@data-text').get()
+    national_data_unit = sel.xpath('//*[@id="myStat_bonusDataN"]/@data-info').get()
+    national_data_value = to_MB(national_data_value, national_data_unit)
+
+    only_lte = only_lte.split(':')[1][1:-1]
+
+    print(f"-" * 30)
+    print(f"Saldo principal: {credit} vence el {credit_expire_date}")
+    print(f"Saldo bono: {bonus_credit} vence el {bonus_credit_expire_date}")
+    print(f"-" * 30)
+    print(f"Quedan: {cant} {unidad} de Internet")
+    print(f"Quedan: {only_lte} de Internet (Solo LTE)")
+    print(f"Quedan: {cant_lte} {unidad_lte} de bono LTE")
+    print(f"Quedan: {national_data_value} {national_data_unit} de Navegación Nacional\n")
+    print(f"La cuenta vence en: {days} días")
+    print(f"-" * 30)
+
+    credit_split = credit.split(' ')
+    bonus_credit_split = bonus_credit.split(' ')
+    only_lte_split = only_lte.split(' ')
 
     return {
         'lte': {
-            'cant': to_MB(cant_lte, unidad_lte)
+            'cant': to_MB(cant_lte, unidad_lte),
+            'unit': unidad
+        },
+        'only_lte':{
+            'cant' : float(only_lte_split[0]),
+            'unit' : only_lte_split[1]
         },
         'normal': {
-            'cant': to_MB(cant, unidad)
+            'cant': to_MB(cant, unidad),
+            'unit': unidad
+        },
+        'credit': {
+            'cant' : float(credit_split[0]),
+            'unit' : credit_split[1]
+        },
+        'credit_bonus':{
+            'cant' : float(bonus_credit_split[0]),
+            'unit' : bonus_credit_split[1]
+        },
+        'national_data':{
+            'cant' : national_data_value,
+            'unit' : national_data_unit
         }
     }
 
