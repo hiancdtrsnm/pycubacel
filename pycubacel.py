@@ -96,29 +96,33 @@ def get_quota(login_data):
     only_lte_split = only_lte.split(' ')
 
     return {
-        'lte': {
-            'cant': to_MB(cant_lte, unidad_lte),
-            'unit': unidad
+        'data' : {
+            'unit' : 'MB',
+            'values' : {
+                'lte' : {
+                    'cant': to_MB(cant_lte, unidad_lte),
+                },
+                'only_lte' : {
+                    'cant' : to_MB(float(only_lte_split[0]), only_lte_split[1])
+                },
+                'normal' : {
+                    'cant': to_MB(cant, unidad)
+                },
+                'national_data' : {
+                    'cant' : to_MB(national_data_value, national_data_unit)
+                }
+            }
         },
-        'only_lte':{
-            'cant' : float(only_lte_split[0]),
-            'unit' : only_lte_split[1]
-        },
-        'normal': {
-            'cant': to_MB(cant, unidad),
-            'unit': unidad
-        },
-        'credit': {
-            'cant' : float(credit_split[0]),
-            'unit' : credit_split[1]
-        },
-        'credit_bonus':{
-            'cant' : float(bonus_credit_split[0]),
-            'unit' : bonus_credit_split[1]
-        },
-        'national_data':{
-            'cant' : national_data_value,
-            'unit' : national_data_unit
+        'credit' : {
+            'unit' : 'CUC',
+            'values' : {
+                'credit_normal' : {
+                    'cant' : float(credit_split[0])
+                },
+                'credit_bonus' : {
+                    'cant' : float(bonus_credit_split[0])
+                }
+            }
         }
     }
 
