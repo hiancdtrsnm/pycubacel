@@ -24,9 +24,12 @@ BASE_HOST = 'https://mi.cubacel.net'
 def to_MB(cant, unit):
     if unit == 'GB':
         return float(cant) * 1024
-
+    if unit == 'B':
+        return float(cant) / 1024
     return float(cant)
 
+def mb_to_GB(cant):
+    return float(cant) / 1024
 
 def get_quota(login_data):
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -79,16 +82,20 @@ def get_quota(login_data):
     national_data_value = to_MB(national_data_value, national_data_unit)
 
     only_lte = only_lte.split(':')[1][1:-1]
+    
+    total_internet = to_MB(cant, unidad) + to_MB(cant_lte, unidad_lte)
 
     print(f"-" * 30)
     print(f"Saldo principal: {credit} vence el {credit_expire_date}")
     print(f"Saldo bono: {bonus_credit} vence el {bonus_credit_expire_date}")
+    print(f"Quedan: {mb_to_GB(total_internet) if total_internet > 1024 else total_internet} GB total de Internet")
     print(f"-" * 30)
-    print(f"Quedan: {cant} {unidad} de Internet")
-    print(f"Quedan: {only_lte} de Internet (Solo LTE)")
-    print(f"Quedan: {cant_lte} {unidad_lte} de bono LTE")
-    print(f"Quedan: {national_data_value} {national_data_unit} de Navegación Nacional\n")
-    print(f"La cuenta vence en: {days} días")
+    print(f"\nDesglose de la cantidad de datos:")
+    print(f"\tQuedan: {cant} {unidad} de Internet en 2G/3G/LTE")
+    print(f"\t      \----> {only_lte} solo para LTE")
+    print(f"\tQuedan: {cant_lte} {unidad_lte} de Bono LTE")
+    print(f"\tQuedan: {national_data_value} {national_data_unit} de Navegación Nacional\n")
+    print(f"Los datos de Internet vencen en: {days} días")
     print(f"-" * 30)
 
     credit_split = credit.split(' ')
