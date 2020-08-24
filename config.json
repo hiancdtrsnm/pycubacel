@@ -1,9 +1,11 @@
 {
     "login": {
         "language": "en_US",
-        "username": "51111111",
+        "username": "55555555",
         "password": "",
-        "uword": ""
+        "uword": "algo",
+        "": "on"
     },
-    "data_path": "~/.internethistory.json"
+    "data_path": "~/.internethistory.json",
+    "cookies_path": "~/.cookie.json"
 }
