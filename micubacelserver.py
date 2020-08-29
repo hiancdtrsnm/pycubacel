@@ -1,4 +1,4 @@
-from micubacel import consult_get
+from micubacel import consult
 from flask import Flask, jsonify
 from pathlib import Path
 
@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=['GET'])
 def hello():
-    data = consult_get(Path('./config.json'))
+    data = consult(Path('./config.json'))
     return jsonify(data)
 
 if __name__ == "__main__":

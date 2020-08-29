@@ -66,14 +66,14 @@ def get_lte_bonus(page):
     return get_data(page, bono_id)
 
 def get_internet(page):
-    # TODO: Parsear por separado el interned de 4 y el de todas las redes
     bono_id='myStat_3001'
     data = get_data(page, bono_id)
-    # bono = page.css(f'div#{bono_id}')[0]
-    # percent = float(bono.attrib.get('data-percent','0').strip())
-    # total = float(data['value'])
-    # if percent>=1e-16:
-    #     total = total*100/percent
+    bono = page.css(f'div#{bono_id}')
+    parent = bono.xpath('parent::div')
+    lte = parent.css('div.network_all::text').get().strip().split()
+    alln = parent.css('div.network_all_cero::text').get().strip().split()
+    data['only_lte'] = {'value': lte[0], 'scale': lte[1]}
+    data['all_networks'] = {'value': alln[0], 'scale': alln[1]}
     return data
 
 def get_min_bonus(page):
@@ -149,19 +149,21 @@ def get_page(login_data=None, cookies=None, return_if_expired_cookies=False):
 
 def print_data(page):
     r = get_money(page)
-    print("Credit: ",r)
+    print("Credit:", r)
     r = get_bonus_money(page)
-    print("Credit Bonus: ",r)
+    print("Credit Bonus:", r)
     r = get_min_bonus(page)
-    print("Minute Bonus: ",r['value'],' ',r['scale'], ' expire ', r['days'])
+    print("Minute Bonus:", r['value'], r['scale'], 'expire', r['days'])
     r = get_sms_bonus(page)
-    print("SMS Bonus: ",r['value'],' ',r['scale'], ' expire ', r['days'])
+    print("SMS Bonus:", r['value'] ,r['scale'], 'expire', r['days'])
     r = get_internet(page)
-    print("Internet: ",r['value'],' ',r['scale'], ' expire ', r['days'])
+    print("Internet, expire", r['days'],':')
+    print('  LTE only:', to_MB(r['only_lte']['value'], r['only_lte']['scale']), 'MB')
+    print('  All networks:', to_MB(r['all_networks']['value'], r['all_networks']['scale']), 'MB')
     r = get_lte_bonus(page)
-    print("LTE Bonus: ",r['value'],' ',r['scale'], ' expire ', r['days'])
+    print("LTE Bonus:", to_MB(r['value'],r['scale']), 'MB expire', r['days'])
     r = get_national_bonus(page)
-    print("National Bonus: ",r['value'],' ',r['scale'], ' expire ', r['days'])
+    print("National Bonus:", r['value'], r['scale'], 'expire', r['days'])
 
 def get_info(page):
     res = {
@@ -182,6 +184,12 @@ def get_info(page):
     res['data']['values']['normal']={}
     res['data']['values']['normal']['cant'] = to_MB(r['value'],r['scale'])
     res['data']['values']['normal']['expire'] = r['days']
+    res['data']['values']['only_lte']={}
+    res['data']['values']['only_lte']['cant'] = to_MB(r['only_lte']['value'],r['only_lte']['scale'])
+    res['data']['values']['only_lte']['expire'] = r['days']
+    res['data']['values']['all_networks']={}
+    res['data']['values']['all_networks']['cant'] = to_MB(r['all_networks']['value'],r['all_networks']['scale'])
+    res['data']['values']['all_networks']['expire'] = r['days']
     r = get_lte_bonus(page)
     res['data']['values']['lte'] = {}
     res['data']['values']['lte']['cant'] = to_MB(r['value'],r['scale'])
@@ -211,6 +219,7 @@ def get_info(page):
 def consult(config_path: Path):
     config = json.load(config_path.open())
     cookies_path = os.path.expandvars(os.path.expanduser(config['cookies_path']))
+    cookies_path = cookies_path+'.'+config['login']['username']
     if os.path.exists(cookies_path):
         cookies = json.load(open(cookies_path))
     else:
@@ -224,8 +233,8 @@ def consult(config_path: Path):
     start = datetime.datetime.now()
     internet = get_info(page)
     ans['internet'] = internet
-    ans['duration'] = datetime.datetime.now() - start
-    ans['timestamp'] = datetime.datetime.now()
+    ans['duration'] = str(datetime.datetime.now() - start)
+    ans['timestamp'] = str(datetime.datetime.now())
     ans['user'] = FORM_DATA['username']
     #TODO: reescribir print_data para no tener q parsear todo denuevo
     print_data(page)
@@ -239,6 +248,7 @@ def consult(config_path: Path):
 def consult_get(config_path: Path):
     config = json.load(config_path.open())
     cookies_path = os.path.expandvars(os.path.expanduser(config['cookies_path']))
+    cookies_path = cookies_path+'.'+config['login']['username']
     if os.path.exists(cookies_path):
         cookies = json.load(open(cookies_path))
     else:
@@ -250,4 +260,5 @@ def consult_get(config_path: Path):
     return get_info(page)
 
 if __name__ == "__main__":
-    typer.run(consult)
+    #typer.run(consult)
+    consult(Path('config.json'))
