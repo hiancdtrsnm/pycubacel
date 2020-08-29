@@ -14,7 +14,7 @@ import typer
 
 warnings.filterwarnings('ignore', category=InsecureRequestWarning)
 
-logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.DEBUG)
 
 my_cookie = {
     "version": 0,
