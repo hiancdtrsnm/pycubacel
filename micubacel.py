@@ -260,5 +260,5 @@ def consult_get(config_path: Path):
     return get_info(page)
 
 if __name__ == "__main__":
-    #typer.run(consult)
-    consult(Path('config.json'))
+    typer.run(consult)
+    #consult(Path('config.json'))
