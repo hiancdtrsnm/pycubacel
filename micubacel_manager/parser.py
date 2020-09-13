@@ -53,36 +53,65 @@ class MiCubacelParser:
         return bono_data
 
     @staticmethod
+    def _default_data():
+        return {
+            'value': 0,
+            'scale': None,
+            'days': 0,
+        }
+
+    @staticmethod
     def _get_national_bonus(page: Selector):
         bono_id='myStat_bonusDataN'
-        return MiCubacelParser._parse_data(page, bono_id)
+        try:
+            res = MiCubacelParser._parse_data(page, bono_id)
+        except IndexError:
+            res = MiCubacelParser._default_data()
+        return res
 
     @staticmethod
     def _get_lte_bonus(page: Selector):
         bono_id='myStat_30012'
-        return MiCubacelParser._parse_data(page, bono_id)
+        try:
+            res = MiCubacelParser._parse_data(page, bono_id)
+        except IndexError:
+            res = MiCubacelParser._default_data()
+        return res
 
     @staticmethod
     def _get_internet(page: Selector):
         bono_id='myStat_3001'
-        data = MiCubacelParser._parse_data(page, bono_id)
-        bono = page.css(f'div#{bono_id}')
-        parent = bono.xpath('parent::div')
-        lte = parent.css('div.network_all::text').get().strip().split()
-        alln = parent.css('div.network_all_cero::text').get().strip().split()
-        data['only_lte'] = {'value': lte[0], 'scale': lte[1]}
-        data['all_networks'] = {'value': alln[0], 'scale': alln[1]}
+        try:
+            data = MiCubacelParser._parse_data(page, bono_id)
+            bono = page.css(f'div#{bono_id}')
+            parent = bono.xpath('parent::div')
+            lte = parent.css('div.network_all::text').get().strip().split()
+            alln = parent.css('div.network_all_cero::text').get().strip().split()
+            data['only_lte'] = {'value': lte[0], 'scale': lte[1]}
+            data['all_networks'] = {'value': alln[0], 'scale': alln[1]}
+        except IndexError:
+            data = MiCubacelParser._default_data()
+            data['only_lte'] = {'value': 0, 'scale': None}
+            data['all_networks'] = {'value': 0, 'scale': None}
         return data
 
     @staticmethod
     def _get_min_bonus(page: Selector):
         bono_id='myStat_bonusVOZI'
-        return MiCubacelParser._parse_data(page, bono_id)
+        try:
+            res = MiCubacelParser._parse_data(page, bono_id)
+        except IndexError:
+            res = MiCubacelParser._default_data()
+        return res
 
     @staticmethod
     def _get_sms_bonus(page: Selector):
         bono_id='myStat_bonusSMSI'
-        return MiCubacelParser._parse_data(page, bono_id)
+        try:
+            res = MiCubacelParser._parse_data(page, bono_id)
+        except IndexError:
+            res = MiCubacelParser._default_data()
+        return res
 
     @staticmethod
     def _get_money(page: Selector):
@@ -111,6 +140,14 @@ class MiCubacelParser:
                 'values':{}
             }
         }
+        # this two alway exist in the micubacel page
+        r = self._get_money(page).split(' ')[0].strip()
+        res['credit']['values']['credit_normal'] = {}
+        res['credit']['values']['credit_normal']['cant'] = r
+        r = self._get_bonus_money(page).split(' ')[0].strip()
+        res['credit']['values']['credit_bonus'] = {}
+        res['credit']['values']['credit_bonus']['cant'] = r
+        # this services can or can't exist
         r = self._get_internet(page)
         res['data']['values']['normal']={}
         res['data']['values']['normal']['cant'] = to_MB(r['value'],r['scale'])
@@ -129,12 +166,6 @@ class MiCubacelParser:
         res['data']['values']['national_data'] = {}
         res['data']['values']['national_data']['cant'] = to_MB(r['value'],r['scale'])
         res['data']['values']['national_data']['expire'] = r['days']
-        r = self._get_money(page).split(' ')[0].strip()
-        res['credit']['values']['credit_normal'] = {}
-        res['credit']['values']['credit_normal']['cant'] = r
-        r = self._get_bonus_money(page).split(' ')[0].strip()
-        res['credit']['values']['credit_bonus'] = {}
-        res['credit']['values']['credit_bonus']['cant'] = r
         r = self._get_sms_bonus(page)
         res['others']['values']['sms'] = {}
         res['others']['values']['sms']['cant'] = r['value']
