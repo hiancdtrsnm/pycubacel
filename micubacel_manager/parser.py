@@ -119,9 +119,12 @@ class MiCubacelParser:
 
     @staticmethod
     def _get_bonus_money(page: Selector):
-        r = page.css('div.myaccount_details_block')
-        r=r[-1]
-        r=r.css('span.cvalue::text').get().strip()
+        try:
+            r = page.css('div.myaccount_details_block')
+            r=r[-1]
+            r=r.css('span.cvalue::text').get().strip()
+        except (AttributeError, IndexError):
+            r = '0 CUC'
         return r
 
     def get_data(self):
