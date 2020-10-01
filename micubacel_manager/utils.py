@@ -26,4 +26,8 @@ def load_cookies(session: Session, cookies: Dict[str, Any]):
 def to_MB(cant, unit):
     if unit == 'GB':
         return float(cant) * 1024
+    if unit == 'KB':
+        return float(cant)/1024
+    if unit == 'B':
+        return float(cant)/(1024**2)
     return float(cant)

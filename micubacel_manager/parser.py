@@ -85,8 +85,16 @@ class MiCubacelParser:
             data = MiCubacelParser._parse_data(page, bono_id)
             bono = page.css(f'div#{bono_id}')
             parent = bono.xpath('parent::div')
-            lte = parent.css('div.network_all::text').get().strip().split()
-            alln = parent.css('div.network_all_cero::text').get().strip().split()
+            lte = parent.css('div.network_all::text')
+            if len(lte)==1:
+                lte = lte[0].get().strip().split()
+                alln = ['0', 'MB']
+            elif len(let)>1:
+                alln = lte[1].get().strip().split()
+                lte = lte[1].get().strip().split()
+            else:
+                lte = ['0', 'MB']
+                alln = ['0', 'MB']
             data['only_lte'] = {'value': lte[0], 'scale': lte[1]}
             data['all_networks'] = {'value': alln[0], 'scale': alln[1]}
         except IndexError:
