@@ -91,7 +91,7 @@ class MiCubacelParser:
                 alln = ['0', 'MB']
             elif len(lte)>1:
                 alln = lte[1].get().strip().split()
-                lte = lte[1].get().strip().split()
+                lte = lte[0].get().strip().split()
             else:
                 lte = ['0', 'MB']
                 alln = ['0', 'MB']
