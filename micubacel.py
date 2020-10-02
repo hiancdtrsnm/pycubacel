@@ -10,4 +10,3 @@ def consult(config_path: Path):
 
 if __name__ == "__main__":
     typer.run(consult)
-    #consult(Path('./config.json'))
