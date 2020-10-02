@@ -11,6 +11,9 @@ import pgrep
 import os
 import urllib3
 import psutil
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 OPENVPN_PROCCESS_NAME = "openvpn"
 
@@ -38,9 +41,13 @@ def get_quota(login_data):
 
     resp = session.post(LOGIN_URL, data=login_data, verify=False)
 
+    open('test.html', 'w').write(resp.text)
+
     sel = Selector(text=resp.text)
 
     url = sel.xpath('//*[@id="englishLanguage"]/@href').get()
+
+    print('TIZAURL: ', url)
 
     resp = session.get(f'{BASE_HOST}{url}')
 
@@ -81,9 +88,7 @@ def get_quota(login_data):
     national_data_unit = sel.xpath('//*[@id="myStat_bonusDataN"]/@data-info').get()
     national_data_value = to_MB(national_data_value, national_data_unit)
 
-    only_lte = only_lte.split(':')[1][1:-1]
-    
-    total_internet = to_MB(cant, unidad) + to_MB(cant_lte, unidad_lte)
+    # only_lte = only_lte.split(':')[1][1:-1]
 
     print(f"-" * 30)
     print(f"Saldo principal: {credit} vence el {credit_expire_date}")
@@ -109,9 +114,9 @@ def get_quota(login_data):
                 'lte' : {
                     'cant': to_MB(cant_lte, unidad_lte),
                 },
-                'only_lte' : {
-                    'cant' : to_MB(float(only_lte_split[0]), only_lte_split[1])
-                },
+                # 'only_lte' : {
+                #     'cant' : to_MB(float(only_lte_split[0]), only_lte_split[1])
+                # },
                 'normal' : {
                     'cant': to_MB(cant, unidad)
                 },
