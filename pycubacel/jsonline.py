@@ -8,13 +8,13 @@ from functools import partial
 from collections import OrderedDict
 import collections.abc as collections_abc
 
-SEPARATORS = (', ',': ')
+SEPARATORS = (', ', ': ')
 class json:
-    __slots__=()
-    dump=partial(_json.dump, separators=SEPARATORS, ensure_ascii=True)
-    dumps=partial(_json.dumps,separators=SEPARATORS, ensure_ascii=True)
-    load=_json.load
-    loads=_json.loads
+    __slots__ = ()
+    dump = partial(_json.dump, separators=SEPARATORS, ensure_ascii=True)
+    dumps = partial(_json.dumps, separators=SEPARATORS, ensure_ascii=True)
+    load = _json.load
+    loads = _json.loads
 
 class LRUCache:
     __slots__ = ("_cache", "_capacity")
@@ -31,17 +31,16 @@ class LRUCache:
         if key in cache:
             cache.move_to_end(key)
             return cache[key]
-        else:
-            if raise_KeyError:
-                raise KeyError(key)
-            return default
+        if raise_KeyError:
+            raise KeyError(key)
+        return default
 
     def put(self, key, value):
         cache = self._cache
         cache[key] = value
         cache.move_to_end(key)
         if len(cache) > self._capacity:
-            cache.popitem(last = False)
+            cache.popitem(last=False)
 
     def pop(self, key, default=None):
         self._cache.pop(key, default)
@@ -60,9 +59,8 @@ class PositionArray(collections_abc.MutableSequence):
     @staticmethod
     def load(f):
         ar = array('Q')
-        arlen = len(ar)
         data = f.read(1024)
-        while data!=b'':
+        while data != b'':
             ar.frombytes(data)
             data = f.read(1024)
         par = PositionArray()
@@ -89,7 +87,7 @@ class PositionArray(collections_abc.MutableSequence):
     def __setitem__(self, idx, item):
         self._validate_index(idx)
         data = self._data
-        data[idx*2],data[idx*2+1]=item
+        data[idx*2], data[idx*2+1] = item
 
     def __delitem__(self, idx):
         self._validate_index(idx)
@@ -98,19 +96,19 @@ class PositionArray(collections_abc.MutableSequence):
 
     def insert(self, idx, item):
         index_bound = len(self._data)//2
-        if idx > index_bound or idx<0:
+        if idx > index_bound or idx < 0:
             raise IndexError
-        self._data.insert(idx*2,item[1])
-        self._data.insert(idx*2,item[0])
+        self._data.insert(idx*2, item[1])
+        self._data.insert(idx*2, item[0])
 
 
 class jsonLine(collections_abc.Sequence):
     __slots__ = ('_index', '_index_path', '_data_path',
                  '_data_file', '_cache')
-    def __init__(self, path:Union[str, Path], default=None, cache_size=10):
+    def __init__(self, path: Union[str, Path], default=None, cache_size=10):
         if default is not None:
-            json.dump=partial(json.dump, default=default)
-            json.dumps=partial(json.dumps, default=default)
+            json.dump = partial(json.dump, default=default)
+            json.dumps = partial(json.dumps, default=default)
         pth = Path(path)
         name = pth.name
         pth = pth.parent
@@ -174,7 +172,7 @@ class jsonLine(collections_abc.Sequence):
         jdata = json.dumps(data)
         self._data_file.close()
         with self._data_path.open('a', encoding='ascii') as f:
-            f.seek(0,2) # jump to the end of the file
+            f.seek(0, 2) # jump to the end of the file
             idx = f.tell() # get the actual position in the file
             offset = 0
             offset += f.write(jdata)
@@ -184,7 +182,7 @@ class jsonLine(collections_abc.Sequence):
         self._dump_index()
 
     def extend(self, data):
-        self._data_file.seek(0,2) # jump to the end of the file
+        self._data_file.seek(0, 2) # jump to the end of the file
         end_idx = self._data_file.tell() # get the actual position in the file
         self._data_file.close()
         buffer = io.BytesIO()
@@ -192,7 +190,7 @@ class jsonLine(collections_abc.Sequence):
         for dat in data:
             jdata = json.dumps(dat)
             idx = f.tell()+end_idx # get the actual position in the file
-            offset=0
+            offset = 0
             offset += f.write(jdata)
             offset += f.write('\n')
             self._index.append((idx, offset))
@@ -211,7 +209,7 @@ class jsonLine(collections_abc.Sequence):
         index = PositionArray()
         idx = file.tell()
         data = file.readline()
-        while data!='':
+        while data != '':
             pos = file.tell()
             index.append((idx, pos-idx-1))
             idx = pos
@@ -222,5 +220,5 @@ class jsonLine(collections_abc.Sequence):
     def rebuild_index(self):
         self._build_index()
 
-def open(path:Union[str, Path], default=None, cache=10):
+def open(path: Union[str, Path], default=None, cache=10):
     return jsonLine(path, default, cache)

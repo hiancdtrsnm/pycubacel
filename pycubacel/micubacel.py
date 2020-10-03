@@ -1,8 +1,6 @@
 import os
-import time
 import json
 import datetime
-import logging
 from pathlib import Path
 from typing import Union, Dict, Any
 import warnings
@@ -24,15 +22,15 @@ class MiCubacel:
 
     def __init__(self, username: str, password: str, cookies: Dict[str, Any]={}):
         self._ss = requests.Session()
-        for i,j in HEADERS.items():
-            self._ss.headers[i]=j
-        self._ss.verify=False
+        for i, j in HEADERS.items():
+            self._ss.headers[i] = j
+        self._ss.verify = False
         self._username = username
         self._password = password
         self._cookies_ok = load_cookies(self._ss, cookies)
         self._login_form = {i: j for i, j in LOGIN_FORM.items()}
-        self._login_form['username']=username
-        self._login_form['password']=password
+        self._login_form['username'] = username
+        self._login_form['password'] = password
 
     @property
     def cookies(self):
@@ -68,7 +66,7 @@ class MiCubacel:
         page = MiCubacelParser(resp.text)
         return page
 
-    def consult(self):
+    def consult(self, print_data=True):
         return self.get_data().data
 
 class MiCubacelConfig(MiCubacel):
@@ -102,7 +100,7 @@ class MiCubacelConfig(MiCubacel):
         if print_data:
             self.print_data(page)
         try:
-            jpth = os.path.expanduser(self._config['data_path']).rsplit('.',1)[0]
+            jpth = os.path.expanduser(self._config['data_path']).rsplit('.', 1)[0]
             consults = jsonLine(jpth, default=str)
             consults.append(ans)
             #with open(os.path.expanduser(self._config['data_path']), 'a') as f:
@@ -121,10 +119,10 @@ class MiCubacelConfig(MiCubacel):
         r = data['others']['values']['minutes']
         print("Minute Bonus:", r['cant'], r['unit'], 'expire', r['expire'])
         r = data['others']['values']['sms']
-        print("SMS Bonus:", r['cant'] ,r['unit'], 'expire', r['expire'])
+        print("SMS Bonus:", r['cant'], r['unit'], 'expire', r['expire'])
         r = data['data']['values']
-        print("Internet, expire", r['normal']['expire'],':')
-        print('  LTE only:', r['only_lte']['cant'] , 'MB')
+        print("Internet, expire", r['normal']['expire'], ':')
+        print('  LTE only:', r['only_lte']['cant'], 'MB')
         print('  All networks:', r['all_networks']['cant'], 'MB')
         print("LTE Bonus:", r['lte']['cant'], 'MB expire', r['lte']['expire'])
         print("National Bonus:", r['national_data']['cant'], 'MB', 'expire in', r['national_data']['expire'])
@@ -132,7 +130,7 @@ class MiCubacelConfig(MiCubacel):
     def compute_delta_and_update(self):
         odata = self.consult(print_data=False)
         data = odata['internet']
-        jpth = os.path.expanduser(self._config['data_path']).rsplit('.',1)[0]
+        jpth = os.path.expanduser(self._config['data_path']).rsplit('.', 1)[0]
         consults = jsonLine(jpth)
         try:
             last = consults[-2]['internet']
@@ -146,18 +144,18 @@ class MiCubacelConfig(MiCubacel):
                 delta = float(data[i]['values'][j]['cant'])-float(last[i]['values'][j]['cant'])
                 data[i]['values'][j]['delta'] = delta
         r = data['credit']['values']['credit_normal']
-        print("Credit:", r['cant'],f" delta={r['delta']}")
+        print("Credit:", r['cant'], f" delta={r['delta']}")
         r = data['credit']['values']['credit_bonus']
-        print("Credit Bonus:", r['cant'],f" delta={r['delta']}")
+        print("Credit Bonus:", r['cant'], f" delta={r['delta']}")
         r = data['others']['values']['minutes']
-        print("Minute Bonus:", r['cant'], r['unit'], 'expire', r['expire'],f" delta={r['delta']}")
+        print("Minute Bonus:", r['cant'], r['unit'], 'expire', r['expire'], f" delta={r['delta']}")
         r = data['others']['values']['sms']
-        print("SMS Bonus:", r['cant'] ,r['unit'], 'expire', r['expire'], f" delta={r['delta']}")
+        print("SMS Bonus:", r['cant'], r['unit'], 'expire', r['expire'], f" delta={r['delta']}")
         r = data['data']['values']
-        print("Internet, expire", r['normal']['expire'],':')
-        print('  LTE only:', r['only_lte']['cant'] , 'MB', f" delta={r['only_lte']['delta']}")
-        print('  All networks:', r['all_networks']['cant'], 'MB',f" delta={r['all_networks']['delta']}")
+        print("Internet, expire", r['normal']['expire'], ':')
+        print('  LTE only:', r['only_lte']['cant'], 'MB', f" delta={r['only_lte']['delta']}")
+        print('  All networks:', r['all_networks']['cant'], 'MB', f" delta={r['all_networks']['delta']}")
         print("LTE Bonus:", r['lte']['cant'], 'MB expire', r['lte']['expire'], f" delta={r['lte']['delta']}")
         print("National Bonus:", r['national_data']['cant'], 'MB', 'expire in', r['national_data']['expire'], f" delta={r['national_data']['delta']}")
-        odata['internet']=data
+        odata['internet'] = data
         return odata

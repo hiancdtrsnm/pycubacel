@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-import typer
 from typing import Optional
+import typer
 from flask import Flask, jsonify
 from pycubacel import MiCubacelConfig
 
@@ -20,6 +20,7 @@ def get_path():
     pth = os.path.expandvars(os.path.expanduser('~/.config.json'))
     if os.path.exists(pth):
         return pth
+    return None
 
 @app.command()
 def consult(config_path: Optional[Path]=None):

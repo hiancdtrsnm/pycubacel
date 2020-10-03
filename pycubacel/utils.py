@@ -6,7 +6,7 @@ from .costants import cookie_template as my_cookie
 def dump_cookies(cookieJar):
     cookies = []
     for cookie in cookieJar:
-        cookied = {i:getattr(cookie,i) for i in my_cookie.keys()}
+        cookied = {i:getattr(cookie, i) for i in my_cookie.keys()}
         cookies.append(cookied)
     return cookies
 
@@ -16,7 +16,7 @@ def load_cookies(session: Session, cookies: Dict[str, Any]):
         expired = False
         for i in my_cookie.keys():
             if i in cookie:
-                if i=='expires' and cookie[i] is not None:
+                if i == 'expires' and cookie[i] is not None:
                     expired = cookie[i] <= time.time()
                 data[i] = cookie[i]
         if not expired:

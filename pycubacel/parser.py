@@ -45,8 +45,8 @@ class MiCubacelParser:
     def _parse_data(page: Selector, Id: str):
         bono = page.css(f'div#{Id}')[0]
         bono_data = {'value':'', 'scale':''}
-        bono_data['value']=bono.attrib.get('data-text','0').strip()
-        bono_data['scale']=bono.attrib.get('data-info','0').strip()
+        bono_data['value'] = bono.attrib.get('data-text', '0').strip()
+        bono_data['scale'] = bono.attrib.get('data-info', '0').strip()
         # TODO: extraer si son dias u horas, por ahora se asume siempre dias
         day = bono.xpath('parent::div').xpath('parent::div').xpath('parent::div').css('.expires_date::text').get().strip()
         bono_data['days'] = day
@@ -62,7 +62,7 @@ class MiCubacelParser:
 
     @staticmethod
     def _get_national_bonus(page: Selector):
-        bono_id='myStat_bonusDataN'
+        bono_id = 'myStat_bonusDataN'
         try:
             res = MiCubacelParser._parse_data(page, bono_id)
         except IndexError:
@@ -71,7 +71,7 @@ class MiCubacelParser:
 
     @staticmethod
     def _get_lte_bonus(page: Selector):
-        bono_id='myStat_30012'
+        bono_id = 'myStat_30012'
         try:
             res = MiCubacelParser._parse_data(page, bono_id)
         except IndexError:
@@ -80,16 +80,16 @@ class MiCubacelParser:
 
     @staticmethod
     def _get_internet(page: Selector):
-        bono_id='myStat_3001'
+        bono_id = 'myStat_3001'
         try:
             data = MiCubacelParser._parse_data(page, bono_id)
             bono = page.css(f'div#{bono_id}')
             parent = bono.xpath('parent::div')
             lte = parent.css('div.network_all::text')
-            if len(lte)==1:
+            if len(lte) == 1:
                 lte = lte[0].get().strip().split()
                 alln = ['0', 'MB']
-            elif len(lte)>1:
+            elif len(lte) > 1:
                 alln = lte[1].get().strip().split()
                 lte = lte[0].get().strip().split()
             else:
@@ -105,7 +105,7 @@ class MiCubacelParser:
 
     @staticmethod
     def _get_min_bonus(page: Selector):
-        bono_id='myStat_bonusVOZI'
+        bono_id = 'myStat_bonusVOZI'
         try:
             res = MiCubacelParser._parse_data(page, bono_id)
         except IndexError:
@@ -129,8 +129,8 @@ class MiCubacelParser:
     def _get_bonus_money(page: Selector):
         try:
             r = page.css('div.myaccount_details_block')
-            r=r[-1]
-            r=r.css('span.cvalue::text').get().strip()
+            r = r[-1]
+            r = r.css('span.cvalue::text').get().strip()
         except (AttributeError, IndexError):
             r = '0 CUC'
         return r
@@ -160,22 +160,22 @@ class MiCubacelParser:
         res['credit']['values']['credit_bonus']['cant'] = r
         # this services can or can't exist
         r = self._get_internet(page)
-        res['data']['values']['normal']={}
-        res['data']['values']['normal']['cant'] = to_MB(r['value'],r['scale'])
+        res['data']['values']['normal'] = {}
+        res['data']['values']['normal']['cant'] = to_MB(r['value'], r['scale'])
         res['data']['values']['normal']['expire'] = r['days']
-        res['data']['values']['only_lte']={}
-        res['data']['values']['only_lte']['cant'] = to_MB(r['only_lte']['value'],r['only_lte']['scale'])
+        res['data']['values']['only_lte'] = {}
+        res['data']['values']['only_lte']['cant'] = to_MB(r['only_lte']['value'], r['only_lte']['scale'])
         res['data']['values']['only_lte']['expire'] = r['days']
-        res['data']['values']['all_networks']={}
-        res['data']['values']['all_networks']['cant'] = to_MB(r['all_networks']['value'],r['all_networks']['scale'])
+        res['data']['values']['all_networks'] = {}
+        res['data']['values']['all_networks']['cant'] = to_MB(r['all_networks']['value'], r['all_networks']['scale'])
         res['data']['values']['all_networks']['expire'] = r['days']
         r = self._get_lte_bonus(page)
         res['data']['values']['lte'] = {}
-        res['data']['values']['lte']['cant'] = to_MB(r['value'],r['scale'])
+        res['data']['values']['lte']['cant'] = to_MB(r['value'], r['scale'])
         res['data']['values']['lte']['expire'] = r['days']
         r = self._get_national_bonus(page)
         res['data']['values']['national_data'] = {}
-        res['data']['values']['national_data']['cant'] = to_MB(r['value'],r['scale'])
+        res['data']['values']['national_data']['cant'] = to_MB(r['value'], r['scale'])
         res['data']['values']['national_data']['expire'] = r['days']
         r = self._get_sms_bonus(page)
         res['others']['values']['sms'] = {}

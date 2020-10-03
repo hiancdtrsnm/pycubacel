@@ -1,1 +1,2 @@
-class BadCredentials(Exception): pass
+class BadCredentials(Exception):
+    pass

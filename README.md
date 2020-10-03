@@ -2,7 +2,7 @@
 
 You should include your own configuration file. `username` must have your cell phone number without any country code or plus sign. `password` must be the one you use on cubacel dashboard
 
-**config.json**
+**config.json or micubacel_config.json**
 
 ```json
 {
