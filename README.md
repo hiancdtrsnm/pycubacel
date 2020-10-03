@@ -17,3 +17,5 @@ You should include your own configuration file. `username` must have your cell p
     "cookies_path": "~/.cookie.json"
 }
 ```
+
+By default the files `config.json` or `micubacel_config.json` are search in the current working directory and after in the home, but a full path can be sepecified.
