@@ -49,7 +49,7 @@ def server(config_path: Optional[Path]=None):
     try:
         from gevent.pywsgi import WSGIServer
         print('Serving Flask app "__main__" with gevent WSGIServer')
-        http_server = WSGIServer(('', 5000), fapp)
+        http_server = WSGIServer(('127.0.0.1', 5000), fapp)
         http_server.serve_forever()
     except ImportError:
         fapp.run(host='127.0.0.1', debug=True)
