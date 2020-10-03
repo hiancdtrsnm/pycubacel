@@ -17,4 +17,10 @@ def ping():
 
 if __name__ == "__main__":
 	#app.run(host='127.0.0.1', debug=True, ssl_context=('cert.pem', 'key.pem'))
-    app.run(host='127.0.0.1', debug=True)
+    try:
+        from gevent.pywsgi import WSGIServer
+
+        http_server = WSGIServer(('', 5000), app)
+        http_server.serve_forever()
+    except ImportError:
+        app.run(host='127.0.0.1', debug=True)

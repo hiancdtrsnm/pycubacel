@@ -1,4 +1,0 @@
-requests==2.23.0
-typer==0.1.1
-parsel==1.5.2
-psutil==5.7.0
