@@ -85,16 +85,15 @@ class MiCubacelParser:
             data = MiCubacelParser._parse_data(page, bono_id)
             bono = page.css(f'div#{bono_id}')
             parent = bono.xpath('parent::div')
-            lte = parent.css('div.network_all::text')
-            if len(lte) == 1:
-                lte = lte[0].get().strip().split()
-                alln = ['0', 'MB']
-            elif len(lte) > 1:
-                alln = lte[1].get().strip().split()
-                lte = lte[0].get().strip().split()
-            else:
-                lte = ['0', 'MB']
-                alln = ['0', 'MB']
+            networks = parent.css('div.network_all')
+            lte, alln = ['0', 'MB'], ['0', 'MB']
+            for sel in networks:
+                network = sel.css('b::text').get().strip()
+                value = lambda : sel.xpath('text()').get().strip().split()
+                if network == "All networks:":
+                    alln = value()
+                elif network == "Only 4G/LTE:":
+                    lte = value()
             data['only_lte'] = {'value': lte[0], 'scale': lte[1]}
             data['all_networks'] = {'value': alln[0], 'scale': alln[1]}
         except IndexError:
