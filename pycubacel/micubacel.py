@@ -58,7 +58,7 @@ class MiCubacel:
             res = ss.post(self.url_login, data=self._login_form, verify=False)
             if not MiCubacelParser.page_ok(res.text):
                 raise BadCredentials()
-        resp = ss.get(self.url_base).text
+        resp = ss.get(self.url_base, verify=False).text
         url = MiCubacelParser.lang_url(resp)
         resp = ss.get(url)
         url = MiCubacelParser.my_account(resp.text)
