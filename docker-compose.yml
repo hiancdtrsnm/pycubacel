@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+
+  pycubacel:
+    build: .
+    command: poetry run python -m pycubacel server config.json.bak
+    volumes:
+      - .:/code
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
