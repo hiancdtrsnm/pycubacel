@@ -4,7 +4,7 @@ services:
 
   pycubacel:
     build: .
-    command: poetry run python -m pycubacel server config.json.bak
+    command: poetry run python -m pycubacel server config.json
     volumes:
       - .:/code
     ports:
