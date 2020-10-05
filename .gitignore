@@ -1,0 +1,9 @@
+.mypy_cache/
+.vscode/
+venv/
+__pycache__/
+cookie.json
+test.html
+dist
+TODO
+config.json
