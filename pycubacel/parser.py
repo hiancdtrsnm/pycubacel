@@ -26,6 +26,13 @@ class MiCubacelParser:
         return True
 
     @staticmethod
+    def home_ok(page: str):
+        sel = Selector(text=page)
+        if len(sel.css('#mySignin')):
+            return False
+        return True
+
+    @staticmethod
     def lang_url(page: str):
         sel = Selector(text=page)
         url = sel.xpath('//*[@id="englishLanguage"]/@href').get()

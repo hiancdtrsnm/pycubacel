@@ -66,6 +66,15 @@ class MiCubacel:
         resp = ss.get(url)
         url = MiCubacelParser.my_account(resp.text)
         resp = ss.get(url)
+        if MiCubacelParser.home_ok(resp.text):
+            res = ss.post(self.url_login, data=self._login_form, verify=False)
+            if not MiCubacelParser.page_ok(res.text):
+                raise BadCredentials()
+            resp = ss.get(self.url_base, verify=False).text
+            url = MiCubacelParser.lang_url(resp)
+            resp = ss.get(url)
+            url = MiCubacelParser.my_account(resp.text)
+            resp = ss.get(url)
         page = MiCubacelParser(resp.text)
         return page
 
@@ -91,11 +100,10 @@ class MiCubacelConfig(MiCubacel):
         super().__init__(username, password, cookies=cookies)
 
     def consult(self, print_data=True):
-        if self._cookies_ok:
-            json.dump(self.cookies, open(self._cookies_path, 'w'), indent=2)
         ans = {}
         start = datetime.datetime.now()
         page = self.get_data()
+        json.dump(self.cookies, open(self._cookies_path, 'w'), indent=2)
         ans['internet'] = page.data
         ans['duration'] = str(datetime.datetime.now() - start)
         ans['timestamp'] = str(datetime.datetime.now())
