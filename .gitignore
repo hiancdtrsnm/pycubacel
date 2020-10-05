@@ -1,7 +1,0 @@
-.mypy_cache/
-.vscode/
-venv/
-__pycache__/
-cookie.json
-test.html
-config.json
