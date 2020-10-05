@@ -70,6 +70,15 @@ class MiCubacelParser:
         return res
 
     @staticmethod
+    def _get_promotional_bonus(page: Selector):
+        bono_id = 'myStat_bonusData'
+        try:
+            res = MiCubacelParser._parse_data(page, bono_id)
+        except IndexError:
+            res = MiCubacelParser._default_data()
+        return res
+
+    @staticmethod
     def _get_lte_bonus(page: Selector):
         bono_id = 'myStat_30012'
         try:
@@ -176,6 +185,10 @@ class MiCubacelParser:
         res['data']['values']['national_data'] = {}
         res['data']['values']['national_data']['cant'] = to_MB(r['value'], r['scale'])
         res['data']['values']['national_data']['expire'] = r['days']
+        r = self._get_promotional_bonus(page)
+        res['data']['values']['promotional_data'] = {}
+        res['data']['values']['promotional_data']['cant'] = to_MB(r['value'], r['scale'])
+        res['data']['values']['promotional_data']['expire'] = r['days']
         r = self._get_sms_bonus(page)
         res['others']['values']['sms'] = {}
         res['others']['values']['sms']['cant'] = r['value']

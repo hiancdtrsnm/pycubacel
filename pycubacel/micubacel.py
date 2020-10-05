@@ -8,7 +8,7 @@ from urllib3.connectionpool import InsecureRequestWarning
 import requests
 from parsel import Selector
 from .costants import HEADERS, LOGIN_FORM
-from .utils import load_cookies, dump_cookies
+from .utils import load_cookies, dump_cookies, bound_float
 from .parser import MiCubacelParser
 from .exceptions import BadCredentials
 from .jsonline import jsonLine
@@ -141,8 +141,11 @@ class MiCubacelConfig(MiCubacel):
             last = consults[-2]['internet']
         for i in data.keys():
             for j in data[i]['values'].keys():
-                delta = float(data[i]['values'][j]['cant'])-float(last[i]['values'][j]['cant'])
-                data[i]['values'][j]['delta'] = delta
+                try:
+                    delta = float(data[i]['values'][j]['cant'])-float(last[i]['values'][j]['cant'])
+                except KeyError:
+                    delta = 0
+                data[i]['values'][j]['delta'] = bound_float(delta)
         r = data['credit']['values']['credit_normal']
         print("Credit:", r['cant'], f" delta={r['delta']}")
         r = data['credit']['values']['credit_bonus']
@@ -156,6 +159,7 @@ class MiCubacelConfig(MiCubacel):
         print('  LTE only:', r['only_lte']['cant'], 'MB', f" delta={r['only_lte']['delta']}")
         print('  All networks:', r['all_networks']['cant'], 'MB', f" delta={r['all_networks']['delta']}")
         print("LTE Bonus:", r['lte']['cant'], 'MB expire', r['lte']['expire'], f" delta={r['lte']['delta']}")
+        print("Promotional Bonus:", r['promotional_data']['cant'], 'MB', 'expire in', r['promotional_data']['expire'], f" delta={r['promotional_data']['delta']}")
         print("National Bonus:", r['national_data']['cant'], 'MB', 'expire in', r['national_data']['expire'], f" delta={r['national_data']['delta']}")
         odata['internet'] = data
         return odata

@@ -23,11 +23,16 @@ def load_cookies(session: Session, cookies: Dict[str, Any]):
             session.cookies.set(**data)
     return session.cookies.get('portaluser') is not None
 
+def bound_float(n):
+    if n <= 1e-16 or float("%.3f" % n) <= 1e-16:
+        return "0"
+    return "%.3f" % n
+
 def to_MB(cant, unit):
     if unit == 'GB':
-        return "%.2f" % (float(cant) * 1024)
+        return bound_float(float(cant) * 1024)
     if unit == 'KB':
-        return "%.2f" % (float(cant)/1024)
+        return bound_float(float(cant)/1024)
     if unit == 'B':
-        return "%.2f" % (float(cant)/(1024**2))
-    return "%.2f" % (float(cant))
+        return bound_float(float(cant)/(1024**2))
+    return bound_float(float(cant))
