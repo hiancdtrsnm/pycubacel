@@ -8,9 +8,9 @@ from urllib3.connectionpool import InsecureRequestWarning
 import requests
 from parsel import Selector
 from .costants import HEADERS, LOGIN_FORM
-from .utils import load_cookies, dump_cookies, bound_float
+from .utils import load_cookies, dump_cookies, bound_float, validate_phone
 from .parser import MiCubacelParser
-from .exceptions import BadCredentials
+from .exceptions import BadCredentials, IcorrectUsernameFormat
 from .jsonline import jsonLine
 
 warnings.filterwarnings('ignore', category=InsecureRequestWarning)
@@ -21,6 +21,9 @@ class MiCubacel:
     url_base = 'https://mi.cubacel.net'
 
     def __init__(self, username: str, password: str, cookies: Dict[str, Any]={}):
+        if validate_phone(username) is False:
+            raise IcorrectUsernameFormat(f"The format must be the number 5 plus seven number. \
+                                            The expression \"{username}\" don't match with this format.")
         self._ss = requests.Session()
         for i, j in HEADERS.items():
             self._ss.headers[i] = j

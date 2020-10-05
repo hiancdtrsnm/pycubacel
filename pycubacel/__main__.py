@@ -57,6 +57,7 @@ def server(config_path: Path = typer.Argument(
     resolve_path=True)):
     global C_PATH
     C_PATH = str(config_path)
+    MiCubacelConfig(config_path)
     try:
         from gevent.pywsgi import WSGIServer
         print('Serving Flask app "__main__" with gevent WSGIServer')

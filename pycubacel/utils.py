@@ -1,7 +1,15 @@
+import re
 import time
 from typing import Dict, Any
 from requests import Session
 from .costants import cookie_template as my_cookie
+
+_phone_validator = re.compile('5[0-9]{7}$')
+
+def validate_phone(phone):
+    if _phone_validator.match(phone) is None:
+        return False
+    return True
 
 def dump_cookies(cookieJar):
     cookies = []
