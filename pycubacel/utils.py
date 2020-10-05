@@ -30,7 +30,7 @@ def load_cookies(session: Session, cookies: Dict[str, Any]):
     return session.cookies.get('portaluser') is not None
 
 def bound_float(n):
-    if n <= 1e-16 or float("%.3f" % n) <= 1e-16:
+    if abs(n) <= 1e-16 or abs(float("%.3f" % n)) <= 1e-16:
         return "0"
     return "%.3f" % n
 

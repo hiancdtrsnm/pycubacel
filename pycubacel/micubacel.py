@@ -144,10 +144,11 @@ class MiCubacelConfig(MiCubacel):
             last = consults[-2]['internet']
         for i in data.keys():
             for j in data[i]['values'].keys():
-                try:
-                    delta = float(data[i]['values'][j]['cant'])-float(last[i]['values'][j]['cant'])
-                except KeyError:
-                    delta = 0
+                #try:
+                delta = float(data[i]['values'][j]['cant'])-float(last[i]['values'][j]['cant'])
+                #except KeyError:
+                #    delta = 0
+                print(delta)
                 data[i]['values'][j]['delta'] = bound_float(delta)
         r = data['credit']['values']['credit_normal']
         print("Credit:", r['cant'], f" delta={r['delta']}")
