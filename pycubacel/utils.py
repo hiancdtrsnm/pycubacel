@@ -7,9 +7,7 @@ from .costants import cookie_template as my_cookie
 _phone_validator = re.compile('5[0-9]{7}$')
 
 def validate_phone(phone):
-    if _phone_validator.match(phone) is None:
-        return False
-    return True
+    return True if _phone_validator.match(phone) else False
 
 def dump_cookies(cookieJar):
     cookies = []

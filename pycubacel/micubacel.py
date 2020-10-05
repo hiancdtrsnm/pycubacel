@@ -21,7 +21,7 @@ class MiCubacel:
     url_base = 'https://mi.cubacel.net'
 
     def __init__(self, username: str, password: str, cookies: Dict[str, Any]={}):
-        if validate_phone(username) is False:
+        if not validate_phone(username):
             raise IcorrectUsernameFormat(f"The format must be the number 5 plus seven number. \
                                             The expression \"{username}\" don't match with this format.")
         self._ss = requests.Session()
