@@ -1,14 +1,9 @@
 import os
 from pathlib import Path
-from typing import Optional
-import typer
 from flask import Flask, jsonify
 from pycubacel import MiCubacelConfig
 
 fapp = Flask(__name__)
-app = typer.Typer()
-C_PATH = None
-
 
 def get_path():
     if os.path.exists('./micubacel_config.json'):
@@ -23,23 +18,12 @@ def get_path():
         return pth
     return None
 
-
-@app.command()
-def consult(config_path: Path = typer.Argument(
-        default=None,
-        exists=True,
-        file_okay=True,
-        dir_okay=False,
-        readable=True,
-        resolve_path=True)):
-    pth = config_path if get_path else get_path()
-    micubacel = MiCubacelConfig(pth)
-    return micubacel.compute_delta_and_update()
-
+C_PATH = get_path()
 
 @fapp.route("/", methods=['GET'])
 def hello():
-    data = consult(C_PATH)
+    micubacel = MiCubacelConfig(C_PATH)
+    data = micubacel.compute_delta_and_update()
     return jsonify(data)
 
 
@@ -47,19 +31,7 @@ def hello():
 def ping():
     return jsonify({'status': 200})
 
-
-@app.command()
-def server(config_path: Path = typer.Argument(
-    default=None,
-    exists=True,
-    file_okay=True,
-    dir_okay=False,
-    readable=True,
-    resolve_path=True)):
-    global C_PATH
-    pth = config_path if get_path else get_path()
-    C_PATH = str(pth)
-    MiCubacelConfig(pth)
+if __name__ == "__main__":
     try:
         from gevent.pywsgi import WSGIServer
         print('Serving Flask app "__main__" with gevent WSGIServer')
@@ -67,15 +39,3 @@ def server(config_path: Path = typer.Argument(
         http_server.serve_forever()
     except ImportError:
         fapp.run(host='0.0.0.0', debug=True)
-
-
-def fserver():
-    typer.run(server)
-
-
-def fconsult():
-    typer.run(consult)
-
-
-if __name__ == "__main__":
-    app()
