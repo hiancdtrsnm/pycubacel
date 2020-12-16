@@ -32,7 +32,7 @@ def consult(config_path: Path = typer.Argument(
         dir_okay=False,
         readable=True,
         resolve_path=True)):
-    pth = config_path if get_path else get_path()
+    pth = config_path if config_path else get_path()
     micubacel = MiCubacelConfig(pth)
     return micubacel.compute_delta_and_update()
 
@@ -57,7 +57,7 @@ def server(config_path: Path = typer.Argument(
     readable=True,
     resolve_path=True)):
     global C_PATH
-    pth = config_path if get_path else get_path()
+    pth = config_path if config_path else get_path()
     C_PATH = str(pth)
     MiCubacelConfig(pth)
     try:
