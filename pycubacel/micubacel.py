@@ -1,6 +1,7 @@
 import os
 import json
 import datetime
+from urllib.parse import urlparse, urlunparse
 from pathlib import Path
 from typing import Union, Dict, Any
 import warnings
@@ -48,33 +49,55 @@ class MiCubacel:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._ss.close()
 
+    def _get_wrapper(self, url):
+        ss = self._ss
+        res = ss.get(url, verify=False, allow_redirects=False)
+        if res.is_redirect:
+            location = res.headers['location']
+            purl = urlparse(location)
+            purl = purl._replace(scheme="https")
+            location = urlunparse(purl)
+            return self._get_wrapper(location)
+        return res
+
+    def _post_wrapper(self, url, data):
+        ss = self._ss
+        res = ss.post(url, verify=False, allow_redirects=False, data=data)
+        if res.is_redirect:
+            location = res.headers['location']
+            purl = urlparse(location)
+            purl = purl._replace(scheme="https")
+            location = urlunparse(purl)
+            return self._get_wrapper(location)
+        return res
+
     def _post(self, url, data):
         ss = self._ss
         ss.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        res = ss.post(url, data=data, verify=False)
+        res = self._post_wrapper(url, data=data)
         ss.headers.pop('Content-Type')
         return res
 
     def get_data(self):
         ss = self._ss
         if not self._cookies_ok:
-            res = ss.post(self.url_login, data=self._login_form, verify=False)
+            res = self._post(self.url_login, data=self._login_form)
             if not MiCubacelParser.page_ok(res.text):
                 raise BadCredentials()
-        resp = ss.get(self.url_base, verify=False).text
+        resp = self._get_wrapper(self.url_base).text
         url = MiCubacelParser.lang_url(resp)
-        resp = ss.get(url)
+        resp = self._get_wrapper(url)
         url = MiCubacelParser.my_account(resp.text)
-        resp = ss.get(url)
+        resp = self._get_wrapper(url)
         if MiCubacelParser.home_ok(resp.text):
-            res = ss.post(self.url_login, data=self._login_form, verify=False)
+            res = self._post(self.url_login, data=self._login_form)
             if not MiCubacelParser.page_ok(res.text):
                 raise BadCredentials()
-            resp = ss.get(self.url_base, verify=False).text
+            resp = self._get_wrapper(self.url_base).text
             url = MiCubacelParser.lang_url(resp)
-            resp = ss.get(url)
+            resp = self._get_wrapper(url)
             url = MiCubacelParser.my_account(resp.text)
-            resp = ss.get(url)
+            resp = self._get_wrapper(url)
         page = MiCubacelParser(resp.text)
         return page
 
