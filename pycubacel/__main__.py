@@ -1,6 +1,7 @@
 import os
+import sys
 from pathlib import Path
-from typing import Optional
+
 import typer
 from flask import Flask, jsonify
 from pycubacel import MiCubacelConfig
@@ -50,12 +51,12 @@ def ping():
 
 @app.command()
 def server(config_path: Path = typer.Argument(
-    default=None,
-    exists=True,
-    file_okay=True,
-    dir_okay=False,
-    readable=True,
-    resolve_path=True)):
+        default=None,
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+        resolve_path=True)):
     global C_PATH
     pth = config_path if config_path else get_path()
     C_PATH = str(pth)
@@ -63,7 +64,7 @@ def server(config_path: Path = typer.Argument(
     try:
         from gevent.pywsgi import WSGIServer
         print('Serving Flask app "__main__" with gevent WSGIServer')
-        http_server = WSGIServer(('0.0.0.0', 5000), fapp)
+        http_server = WSGIServer(('0.0.0.0', 5000), fapp, log=sys.stdout)
         http_server.serve_forever()
     except ImportError:
         fapp.run(host='0.0.0.0', debug=True)
